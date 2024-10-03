@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Utility.CommonData;
 
 namespace AncientCities.Models
 {
@@ -17,45 +16,18 @@ namespace AncientCities.Models
         [Display(Name = "Estimated population")]
         public int? Population { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? Created { get; set; }
 
-        private string? _eraCreated;
+        [Display(Name = "Before or after Christ")]
+        public string? EraCreated { get; set; }
 
-        public string? EraCreated
-        {
-            get
-            {
-                if (Created.HasValue)
-                {
-                    return Created.Value.Year > 0 ? Era.EraNames.AD.ToString() : Era.EraNames.BC.ToString();
-                }
-                return null;
-            }
-            set 
-            {
-                _eraCreated = value;
-            }
-        }
-
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? Defunct { get; set; }
 
-        private string? _eraDefunct;
+        [Display(Name = "Before or after Christ")]
+        public string? EraDefunct { get; set; }
 
-        public string? EraDefunct
-        {
-            get
-            {
-                if (Defunct.HasValue)
-                {
-                    return Defunct.Value.Year > 0 ? Era.EraNames.AD.ToString() : Era.EraNames.BC.ToString();
-                }
-                return null;
-            }
-            set
-            {
-                _eraDefunct = value;
-            }
-        }
         public string? Description { get; set; }
 
 
