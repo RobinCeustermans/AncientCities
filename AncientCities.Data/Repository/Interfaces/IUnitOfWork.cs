@@ -4,6 +4,7 @@
     {
         ICityRepository CityRepository { get; }
         ICityTypeRepository CityTypeRepository { get; }
+        ICityImageRepository CityImageRepository { get; }
 
         void Save();
     }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace AncientCities.Models
 {
@@ -37,5 +38,8 @@ namespace AncientCities.Models
         public int? TypeId { get; set; }
 
         public CityType? Type { get; set; }
+
+        [ValidateNever]
+        public List<CityImage> CityImages { get; set; }
     }
 }

@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <Folder Include="Client\angular-app\projects\" />
+    <Folder Include="wwwroot\images\cities\" />
     <Folder Include="wwwroot\js\" />
   </ItemGroup>
 

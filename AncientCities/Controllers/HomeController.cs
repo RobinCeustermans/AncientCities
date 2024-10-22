@@ -13,11 +13,13 @@ namespace AncientCities.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public HomeController(ApplicationDbContext context, IUnitOfWork unitOfWork)
+        public HomeController(ApplicationDbContext context, IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _unitOfWork = unitOfWork;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public IActionResult Index()
@@ -25,7 +27,6 @@ namespace AncientCities.Controllers
             List<City> list = _unitOfWork.CityRepository.GetAll(includeProperties: "Type").ToList();
             return View(list);
         }
-
 
         public IActionResult Upsert(int? id)
         {
@@ -47,7 +48,7 @@ namespace AncientCities.Controllers
             }
             else
             {
-                cityViewModel.City = _unitOfWork.CityRepository.Get(x => x.Id == id);
+                cityViewModel.City = _unitOfWork.CityRepository.Get(x => x.Id == id, includeProperties: "CityImages");
                 if (cityViewModel.City == null)
                     return NotFound();
 
@@ -61,12 +62,12 @@ namespace AncientCities.Controllers
         }
 
         [HttpPost]
-        public IActionResult Upsert(CityViewModel cityViewModel)
+        public IActionResult Upsert(CityViewModel cityViewModel, List<IFormFile> files)
         {
             if (ModelState.IsValid)
             {
                 cityViewModel.City.EraCreated = cityViewModel.EraCreatedInt == 0 ? "BC" : cityViewModel.City.EraCreated = cityViewModel.EraCreatedInt == 1 ? "AD" : null;
-                cityViewModel.City.EraDefunct = cityViewModel.EraDefunctInt == 0 ? "BC" : cityViewModel.City.EraDefunct = cityViewModel.EraDefunctInt == 1 ? "AD": null;
+                cityViewModel.City.EraDefunct = cityViewModel.EraDefunctInt == 0 ? "BC" : cityViewModel.City.EraDefunct = cityViewModel.EraDefunctInt == 1 ? "AD" : null;
 
                 if (cityViewModel.City.Id == 0)
                 {
@@ -78,11 +79,73 @@ namespace AncientCities.Controllers
                 }
 
                 _unitOfWork.Save();
+
+                string wwwrootPath = _webHostEnvironment.WebRootPath;
+
+                if (files != null)
+                {
+                    foreach (IFormFile file in files)
+                    {
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                        string productParh = @"images\cities/city-" + cityViewModel.City.Id;
+                        string finalPath = Path.Combine(wwwrootPath, productParh);
+
+                        if (!Directory.Exists(finalPath))
+                        {
+                            Directory.CreateDirectory(finalPath);
+                        }
+
+                        using (var fileStream = new FileStream(Path.Combine(finalPath, fileName), FileMode.Create))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+
+                        CityImage image = new CityImage()
+                        {
+                            CityId = cityViewModel.City.Id,
+                            ImageUrl = @"\" + productParh + @"\" + fileName
+                        };
+
+                        if (cityViewModel.City.CityImages == null)
+                        {
+                            cityViewModel.City.CityImages = new List<CityImage>();
+                        }
+
+                        cityViewModel.City.CityImages.Add(image);
+                    }
+
+                    _unitOfWork.CityRepository.Update(cityViewModel.City);
+                    _unitOfWork.Save();
+                }
+
                 return RedirectToAction("Index");
             }
 
             cityViewModel.EraNames = EnumHelper.GetEnumSelectList<Era.EraNames>();
             return View(cityViewModel);
+        }
+
+        public IActionResult DeleteImage(int imageId)
+        {
+            var imageToBeDeleted = _unitOfWork.CityImageRepository.Get(x => x.Id == imageId);
+            int cityId = imageToBeDeleted.CityId;
+            if (imageToBeDeleted != null)
+            {
+                if (!string.IsNullOrEmpty(imageToBeDeleted.ImageUrl))
+                {
+                    var oldPath = Path.Combine(_webHostEnvironment.WebRootPath, imageToBeDeleted.ImageUrl.TrimStart('\\'));
+
+                    if (System.IO.File.Exists(oldPath))
+                    {
+                        System.IO.File.Delete(oldPath);
+                    }
+                }
+
+                _unitOfWork.CityImageRepository.Remove(imageToBeDeleted);
+                _unitOfWork.Save();
+            }
+
+            return RedirectToAction(nameof(Upsert), new { id = cityId });
         }
 
         public IActionResult Delete(int id)
@@ -91,6 +154,20 @@ namespace AncientCities.Controllers
             if (obj == null)
             {
                 return NotFound();
+            }
+
+            string cityPath = @"images\cities/city-" + id;
+            string finalPath = Path.Combine(_webHostEnvironment.WebRootPath, cityPath);
+
+            if (Directory.Exists(finalPath))
+            {
+                string[] filePaths = Directory.GetFiles(finalPath);
+                foreach (string filePath in filePaths)
+                {
+                    System.IO.File.Delete(filePath);
+                }
+
+                Directory.Delete(finalPath);
             }
 
             _unitOfWork.CityRepository.Remove(obj);

@@ -27,6 +27,7 @@ namespace AncientCities.Data.Repository.Concrete
                 objDb.Population = city.Population;
                 objDb.PartOf = city.PartOf;
                 objDb.TypeId = city.TypeId;
+                objDb.CityImages = city.CityImages;
             }            
         }
     }

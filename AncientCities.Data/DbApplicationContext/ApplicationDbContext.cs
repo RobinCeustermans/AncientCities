@@ -13,6 +13,7 @@ namespace AncientCities.Data.DbApplicationContext
 
         public DbSet<City> Cities { get; set; }
         public DbSet<CityType> Types { get; set; }
+        public DbSet<CityImage> CityImages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
