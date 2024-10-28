@@ -1,0 +1,9 @@
+<tr>
+  <td class="col-10">{{ cityType.name }}</td>
+  <td class="col-2">
+    <div class="d-flex flex-column flex-sm-row gap-2">
+      <a [routerLink]="['/edit-citytype', cityType.id]" class="btn btn-primary col-12 col-sm-5">Edit</a>
+      <button class="btn btn-danger col-12 col-sm-5" type="button" (click)="onDeleteCityType()">Delete</button>
+    </div>
+  </td>
+</tr>

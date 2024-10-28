@@ -1,0 +1,17 @@
+<div class="container p-4">
+  <h2>Ancient Cities</h2>
+  <a routerLink="/create-citytype" class="btn btn-primary mb-3">Add New City type</a>
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <app-city-type *ngFor="let cityType of cityTypes" [cityType]="cityType" [deleteCityType]="deleteCityType.bind(this)"></app-city-type>
+      </tbody>
+    </table>
+  </div>
+</div>

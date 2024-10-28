@@ -52,7 +52,7 @@ export class CityFormComponent implements OnInit {
   }
 
   cancel() {
-    this.router.navigate(['/']); // Navigate to the home page
+    this.router.navigate(['/']);
   }
 
   parseToDate(dateString: string | Date | undefined): Date | undefined {

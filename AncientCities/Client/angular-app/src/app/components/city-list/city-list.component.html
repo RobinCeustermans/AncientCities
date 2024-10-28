@@ -3,32 +3,20 @@
   <a routerLink="/create-city" class="btn btn-primary mb-3">Add New City</a>
 
   <div class="table-responsive">
-    <table class="table table-bordered">
+    <table class="table">
       <thead>
         <tr>
           <th>Name</th>
           <th>Part Of</th>
           <th>Population</th>
+          <th>Type</th>
           <th>Created</th>
           <th>Defunct</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let city of cities">
-          <td>{{ city.name }}</td>
-          <td>{{ city.partOf }}</td>
-          <td>{{ city.population }}</td>
-          <td>{{ city.type?.name }}</td>
-          <td>{{ city.created | date: 'dd/MM/yyyy' }} {{ city.eraCreated }}</td>
-          <td>{{ city.defunct | date: 'dd/MM/yyyy' }} {{ city.eraDefunct }}</td>
-          <td>
-            <div class="d-flex flex-column flex-sm-row gap-2">
-              <a [routerLink]="['/edit-city', city.id]" class="btn btn-primary col-12 col-sm-5">Edit</a>
-              <button class="btn btn-danger col-12 col-sm-5" type="button" (click)="deleteCity(city.id)">Delete</button>
-            </div>
-          </td>
-        </tr>
+        <app-city *ngFor="let city of cities" [city]="city" [deleteCity]="deleteCity.bind(this)"></app-city>
       </tbody>
     </table>
   </div>

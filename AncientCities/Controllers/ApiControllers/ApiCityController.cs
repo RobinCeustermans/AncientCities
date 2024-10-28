@@ -2,7 +2,7 @@
 using AncientCities.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AncientCities.Web.Controllers
+namespace AncientCities.Web.Controllers.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
