@@ -1,3 +1,4 @@
+import { CityImage } from "./city-image";
 import { CityType } from "./city-type";
 
 export class City {
@@ -12,5 +13,6 @@ export class City {
   description?: string;
   typeId?: number;
   type?: CityType;
+  cityImages: CityImage[] = [];
 }
 

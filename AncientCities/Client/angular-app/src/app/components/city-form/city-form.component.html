@@ -1,65 +1,86 @@
 <div class="container p-4">
   <h2>{{ isEditMode ? 'Edit City' : 'Create City' }}</h2>
 
-  <form (ngSubmit)="saveCity()">
-    <div class="mb-3">
-      <label for="name" class="form-label">City Name</label>
-      <input type="text" [(ngModel)]="city.name" name="name" class="form-control" required />
-    </div>
+  <form (ngSubmit)="saveCity()" class="row">
+    <div class="col-lg-8 col-md-12">
 
-    <div class="mb-3">
-      <label for="partOf" class="form-label">Part Of</label>
-      <input type="text" [(ngModel)]="city.partOf" name="partOf" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-      <label for="population" class="form-label">Population</label>
-      <input type="number" [(ngModel)]="city.population" name="population" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-      <label for="typeId" class="form-label">City Type</label>
-      <select [(ngModel)]="city.typeId" name="typeId" class="form-select">
-        <option [value]="null" disabled selected>--Select Type--</option>
-        <option *ngFor="let type of cityTypes" [value]="type.id">{{ type.name }}</option>
-      </select>
-    </div>
-
-    <div class="row mb-3">
-      <div class="col-7">
-        <label for="created" class="form-label">Created</label>
-        <input type="date"
-               [value]="formatDateForInput(city.created)"
-               name="created"
-               class="form-control"
-               (change)="dateChange($event, 'created')" />
+      <div class="mb-3">
+        <label for="name" class="form-label">City Name</label>
+        <input type="text" [(ngModel)]="city.name" name="name" class="form-control" required />
       </div>
-      <div class="col-5">
-        <label for="eraCreated" class="form-label">Era Created</label>
-        <select [(ngModel)]="city.eraCreated" name="eraCreated" class="form-control" [disabled]="!formatDateForInput(city.created)">
-          <option *ngFor="let option of eraOptions" [value]="option.value">{{ option.label }}</option>
+
+      <div class="mb-3">
+        <label for="partOf" class="form-label">Part Of</label>
+        <input type="text" [(ngModel)]="city.partOf" name="partOf" class="form-control" required />
+      </div>
+
+      <div class="mb-3">
+        <label for="population" class="form-label">Population</label>
+        <input type="number" [(ngModel)]="city.population" name="population" class="form-control" />
+      </div>
+
+      <div class="mb-3">
+        <label for="typeId" class="form-label">City Type</label>
+        <select [(ngModel)]="city.typeId" name="typeId" class="form-select">
+          <option [value]="null" disabled selected>--Select Type--</option>
+          <option *ngFor="let type of cityTypes" [value]="type.id">{{ type.name }}</option>
         </select>
       </div>
+
+      <div class="row mb-3">
+        <div class="col-7">
+          <label for="created" class="form-label">Created</label>
+          <input type="date"
+                 [value]="formatDateForInput(city.created)"
+                 name="created"
+                 class="form-control"
+                 (change)="dateChange($event, 'created')" />
+        </div>
+        <div class="col-5">
+          <label for="eraCreated" class="form-label">Era Created</label>
+          <select [(ngModel)]="city.eraCreated" name="eraCreated" class="form-control" [disabled]="!formatDateForInput(city.created)">
+            <option *ngFor="let option of eraOptions" [value]="option.value">{{ option.label }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-7">
+          <label for="defunct" class="form-label">Defunct</label>
+          <input type="date"
+                 [value]="formatDateForInput(city.defunct)"
+                 name="defunct"
+                 class="form-control"
+                 (change)="dateChange($event, 'defunct')" />
+        </div>
+        <div class="col-5">
+          <label for="eraDefunct" class="form-label">Era Defunct</label>
+          <select [(ngModel)]="city.eraDefunct" name="eraDefunct" class="form-control" [disabled]="!formatDateForInput(city.defunct)">
+            <option *ngFor="let option of eraOptions" [value]="option.value">{{ option.label }}</option>
+          </select>
+        </div>
+
+        <div class="mb-3 mt-3">
+          <label for="imageUpload">Upload Images:</label>
+          <input type="file" id="imageUpload" (change)="onFileSelected($event)" multiple>
+        </div>
+
+      </div>
     </div>
 
-    <div class="row mb-3">
-      <div class="col-7">
-        <label for="defunct" class="form-label">Defunct</label>
-        <input type="date"
-               [value]="formatDateForInput(city.defunct)"
-               name="defunct"
-               class="form-control"
-               (change)="dateChange($event, 'defunct')" />
-      </div>
-      <div class="col-5">
-        <label for="eraDefunct" class="form-label">Era Defunct</label>
-        <select [(ngModel)]="city.eraDefunct" name="eraDefunct" class="form-control" [disabled]="!formatDateForInput(city.defunct)">
-          <option *ngFor="let option of eraOptions" [value]="option.value">{{ option.label }}</option>
-        </select>
+    <div class="col-lg-4 col-md-12">
+      <div *ngIf="city.cityImages.length > 0">
+        <h4>Uploaded Images:</h4>
+        <div *ngFor="let image of city.cityImages" class="mb-3">
+          <img [src]="'http://localhost:5000/' + image.imageUrl" alt="City Image" class="img-thumbnail" width="350" height="100">
+          <button type="button" class="btn btn-danger btn-sm mt-2" (click)="removeImage(image)">
+            <i class="bi bi-trash"></i> Remove
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="row mb-3 pt-5">
+    <div class="row mb-3 pt-4">
       <div class="col-6">
         <button type="button" (click)="cancel()" class="btn btn-secondary w-100">Cancel</button>
       </div>

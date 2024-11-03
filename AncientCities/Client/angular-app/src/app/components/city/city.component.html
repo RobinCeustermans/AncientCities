@@ -1,14 +1,14 @@
 <tr>
+  <td>
+    <div class="d-flex flex-column flex-sm-row gap-2 me-4">
+      <a [routerLink]="['/edit-city', city.id]" class="btn btn-primary col-12 col-sm-5">Edit</a>
+      <button class="btn btn-danger col-12 col-sm-5" type="button" (click)="onDeleteCity()">Delete</button>
+    </div>
+  </td>
   <td>{{ city.name }}</td>
   <td>{{ city.partOf }}</td>
   <td>{{ city.population }}</td>
   <td>{{ city.type?.name }}</td>
   <td>{{ city.created | date: 'dd/MM/yyyy' }} {{ city.eraCreated }}</td>
   <td>{{ city.defunct | date: 'dd/MM/yyyy' }} {{ city.eraDefunct }}</td>
-  <td>
-    <div class="d-flex flex-column flex-sm-row gap-2">
-      <a [routerLink]="['/edit-city', city.id]" class="btn btn-primary col-12 col-sm-5">Edit</a>
-      <button class="btn btn-danger col-12 col-sm-5" type="button" (click)="onDeleteCity()">Delete</button>
-    </div>
-  </td>
 </tr>

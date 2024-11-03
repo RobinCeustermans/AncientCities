@@ -19,8 +19,9 @@ export class CityFormComponent implements OnInit {
   city: City = new City();
   cityTypes: CityType[] = [];
   isEditMode = false;
-
   eraOptions = Era;
+  selectedFiles: File[] = [];
+  previewImages: string[] = [];
 
   constructor(
     private cityService: CityService,
@@ -51,7 +52,7 @@ export class CityFormComponent implements OnInit {
     });
   }
 
-  cancel() {
+  cancel(): void {
     this.router.navigate(['/']);
   }
 
@@ -62,8 +63,41 @@ export class CityFormComponent implements OnInit {
     return undefined;
   }
 
+  onFileSelected(event: any): void {
+    this.selectedFiles = Array.from(event.target.files);
+    this.previewImages = [];
+
+    this.selectedFiles.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.previewImages.push(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
   saveCity(): void {
-    this.cityService.saveCity(this.city).subscribe(() => {
+    const formData = new FormData();
+
+    // Append each property of the city object to FormData
+    Object.keys(this.city).forEach(key => {
+      const value = (this.city as any)[key];
+      if (value !== undefined && value !== null) {
+        if (value instanceof Date) {
+          var test = value.toISOString();
+          formData.append(key, value.toISOString());
+        } else {
+          formData.append(key, value.toString());
+        }
+      }
+    });
+
+    // Append each selected file for images with the key 'images'
+    this.selectedFiles.forEach(file => {
+      formData.append('images', file);
+    });
+
+    this.cityService.saveCityWithImages(formData).subscribe(() => {
       this.router.navigate(['/']);
     });
   }
@@ -88,8 +122,33 @@ export class CityFormComponent implements OnInit {
     }
   }
 
+  handleFileInput(event: any): void {
+    const files = event.target.files;
+    if (files) {
+      this.selectedFiles = Array.from(files);
+      this.previewImages = [];
+
+      this.selectedFiles.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.previewImages.push(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  }
+
   isEraEnabled(dateField: Date | undefined): boolean {
     return !!dateField;
   }
-}
 
+  removeImage(image: any): void {
+    if (image.id) {
+      this.cityService.deleteCityImage(image.id).subscribe(() => {
+        // Remove the image from the UI
+        this.city.cityImages = this.city.cityImages.filter(img => img.id !== image.id);
+        this.cdr.detectChanges();
+      });
+    }
+  }
+}

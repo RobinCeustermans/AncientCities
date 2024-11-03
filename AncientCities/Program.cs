@@ -1,12 +1,20 @@
 using AncientCities.Data.DbApplicationContext;
 using AncientCities.Data.Repository.Concrete;
 using AncientCities.Data.Repository.Interfaces;
+using AncientCities.Web.Mappers;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        // Configure JSON options
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    });
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -25,6 +33,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddAutoMapper(typeof(CityMapper));
 
 var app = builder.Build();
 
@@ -48,7 +57,6 @@ app.MapControllers();
 
 // Serve Angular App
 app.MapFallbackToFile("/Client/angular-app/dist/angular-app/index.html");
-
 
 // Default route for controllers
 app.MapControllerRoute(

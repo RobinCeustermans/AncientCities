@@ -26,7 +26,25 @@ export class CityService {
       return this.http.put<City>(`${this.apiUrl}/${city.id}`, city);
     }
   }
+
+  saveCityWithImages(formData: FormData): Observable<City> {
+    let cityId: number | null = null;
+    if (formData.has('id')) {
+      cityId = parseInt(formData.get('id') as string, 10);
+    }
+
+    if (cityId === 0 || cityId === null) {
+      return this.http.post<City>(this.apiUrl, formData);
+    } else {
+      return this.http.put<City>(`${this.apiUrl}/${cityId}`, formData);
+    }
+  }
+
   deleteCity(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  deleteCityImage(imageId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/deleteImage/${imageId}`);
   }
 }
